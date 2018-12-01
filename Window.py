@@ -12,7 +12,7 @@ class Window(Frame):
         self.card_values = ('2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A')
         self.suits = ('C', 'S', 'H', 'D')
         self.image_files = self.create_image_dict()
-        self.counts = (-3, -2, -1, 0, 1, 2, 3, 4, 5)
+        self.counts = [i for i in range(-10, 11)]
         self.pi, self.V = self.loadPolicy()
         self.img = []
         self.count_input = None
@@ -41,7 +41,7 @@ class Window(Frame):
         self.create_card_text()
 
         # Create button that takes in results, creates dict of them
-        Button(self.master, text='Return Result', width=15, command=self.analyze).grid(row=6, column=0, columnspan=2,
+        Button(self.master, text='Return Result', width=15, command=self.analyze).grid(row=7, column=0, columnspan=2,
                                                                                        padx=5, pady=10,
                                                                                        sticky='n')
 
@@ -111,7 +111,7 @@ class Window(Frame):
 
     def getCards(self):
         cards = defaultdict(str)
-        order = ['p1', 'p2', 'p3', 'd1']
+        order = ['p1', 'p2', 'p3', 'p4', 'd1']
         for i, entry in enumerate(self.card_entry):
             if entry.get() != '':
                 cards[order[i]] = entry.get()
@@ -254,13 +254,17 @@ class Window(Frame):
         self.card_entry.append(Entry(self.master, width=12, bg='white'))
         self.card_entry[2].grid(row=3, column=1, padx=pad, pady=pad)
 
-        Label(self.master, text='Shown Dealer Card:').grid(row=4, column=0, sticky='e')
+        Label(self.master, text='Player Card 4:').grid(row=4, column=0, sticky='e')
         self.card_entry.append(Entry(self.master, width=12, bg='white'))
         self.card_entry[3].grid(row=4, column=1, padx=pad, pady=pad)
 
-        Label(self.master, text='Card Count:').grid(row=5, column=0, sticky='e')
+        Label(self.master, text='Shown Dealer Card:').grid(row=5, column=0, sticky='e')
+        self.card_entry.append(Entry(self.master, width=12, bg='white'))
+        self.card_entry[4].grid(row=5, column=1, padx=pad, pady=pad)
+
+        Label(self.master, text='Card Count:').grid(row=6, column=0, sticky='e')
         self.count_input = Entry(self.master, width=12, bg='white')
-        self.count_input.grid(row=5, column=1, padx=pad, pady=pad)
+        self.count_input.grid(row=6, column=1, padx=pad, pady=pad)
 
         Label(self.master, text='Optimum Policy:').grid(row=11, column=0, sticky='e')
         Label(self.master, text='Expected Reward:').grid(row=12, column=0, sticky='e')

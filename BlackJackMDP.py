@@ -2,7 +2,6 @@ import copy
 import sys
 import collections
 from datetime import datetime
-import cProfile
 import re
 import pickle
 import itertools
@@ -47,13 +46,26 @@ class MDP:
 
 
 class BlackjackMDP(MDP):
+    """
+    Creates BlackJackMDP from parent class MDP, inherits 'computeStates' function which computes all
+    relevant states and returns them as a set for the MDP through a queue search.
+    """
     def __init__(self, cardValues=('2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A'),
                  threshold=21, bet=1, count=0, blackjack=1.5, numCards=52, midcards = 12):
         """
-        cardValues: list of integers (face values for each card included in the deck)
-        multiplicity: single integer representing the number of cards with each face value
-        threshold: maximum number of points (i.e. sum of card values in hand) before going bust
-        peekCost: how much it costs to peek at the next card
+        cardValues:     list of integers (face values for each card included in the deck)
+        multiplicity:   single integer representing the number of cards with each face value
+        threshold:      maximum number of points (i.e. sum of card values in hand) before going bust
+        peekCost:       how much it costs to peek at the next card
+        blackjack:      multiplier if blackjack is achieved with 2 cards for player
+        numCards:       Total number of cards in the deck
+        midcards:       Number of 7-9 value cards in the deck. These are not taken into account in general definition of
+                        "True Count", thus provide variability in expected value despite same count value
+        cardLevels:     List of 3 tuples. First tuple holds cards associated w/ -1 count, second tuple hold cards
+                        assoc. w/ 0 count, third holds values w/ +1 count
+        probability:    Calculates probability of drawing certain card value from different levels in "cardLevels"
+        pl/pm/ph        Ind probability of lower card, mid card, and high card
+        probabilitycard Prob of certain card str call happening
         """
         self.cardValues = cardValues
         self.threshold = threshold
@@ -63,18 +75,26 @@ class BlackjackMDP(MDP):
         self.numCards = numCards
         self.initialcount = count
         self.cardLevels = [(self.cardValues[:5]), (self.cardValues[5:8]), (self.cardValues[8:])]
-        self.probability = [(52-midcards-count)/2/52/5, midcards/52/3, (count+(52-midcards-count)/2)/52/5]
-        self.pl = (52-midcards-count)/2/52/5
-        self.pm = midcards/52/3
-        self.ph = (count + (52-midcards-count)/2)/52/5
+        self.probability = [(52-midcards-count)/2/self.numCards/5, midcards/self.numCards/3,
+                            (count+(52-midcards-count)/2)/self.numCards/5]
+        self.pl = (52-midcards-count)/2/self.numCards/5
+        self.pm = midcards/self.numCards/3
+        self.ph = (count + (52-midcards-count)/2)/self.numCards/5
         self.probabilitycard = {'2': self.pl, '3': self.pl, '4': self.pl, '5': self.pl, '6': self.pl, '7': self.pm,
                                 '8': self.pm, '9': self.pm, 'T': self.ph, 'J': self.ph, 'Q': self.ph,
                                 'K': self.ph, 'A': self.ph}
 
     def startState(self):
+        """Returns the start state of the MDP problem"""
         return ('', '', self.cardcount)
 
     def actions(self, state):
+        """
+        Given a state, return all viable actions for the MDP. Using logic, took out some of the actions for double to
+        shrink state space and increase efficiency. These actions that were taking out had very little chance in
+        doing the policy.
+        """
+
         cardValue, DealerCards, count = state
         if cardValue == '':
             return ['Begin']
@@ -101,6 +121,16 @@ class BlackjackMDP(MDP):
             raise NotImplemented('error')
 
     def sortCards(self, cardValue, deepAnalysis=True):
+        """
+        Summary: Given a card state, this function will output the value of the cards and num aces present
+                    and whether it is valid to split or double your current hand. Used specifically in the actions
+                    function to gather information on which action can be taken in the MDP.
+
+        :param cardValue: Input card state.
+        :param deepAnalysis: Given an input state, will return if state can be doubled, split, and teh number of aces.
+                                If false, will not return these
+        :return: Will return the value, split boolean, acecounter value, and double boolean.
+        """
 
         if cardValue == '':
             return 0
@@ -118,6 +148,7 @@ class BlackjackMDP(MDP):
             x = cardValue.find('*')
             value = int(cardValue[:x])
 
+        # If deepAnalysis is turned on, will also return the split and double boolean values along with acecount.
         if deepAnalysis:
             if 'S' in cardValue[x:]:
                 split = True
@@ -129,17 +160,25 @@ class BlackjackMDP(MDP):
         else:
             return int(value)
 
-
-    # Compute value of cards given the face value of each card from the state
     def cards_value(self, card_state, dealerintial=False):
+        """
+        Takes a card state inputted, and ouputs integer value of the card state inputted. Can toggle in inputs if this
+        is a dealer hand or a player hand. Dealer hand is more simplified and can be done more efficiently.
+
+        :param card_state:      Card state value plugged in, directly from the first entry of the state tuple
+        :param dealerintial:    If this option is turned on, returns card value specifically for a dealer state input.
+                                Otherwise, player input is assumed. Dealer state more simplified than player state.
+        :return:                Returns the integer value of the card state inputted. Takes into account aces.
+        """
+        # If dealer hand toggle is on, run following simplified cod for dealer analysis
         if dealerintial:
             if card_state == 11:
                 return str(card_state) + '*A'
             return card_state
 
+
         if type(card_state) == int:
             return card_state
-
         acecounter = card_state.count('A')
 
         if not card_state:
@@ -269,8 +308,6 @@ class BlackjackMDP(MDP):
                             result.append(((cardValue, None, None), dealerStates[key], self.blackjack*self.bet))
                         elif dealer_value == 21:
                             result.append(((21, 21, None), dealerStates[key], 0))
-                    else:
-                        raise NotImplemented('shouldnt be an else')
                 return result
 
             else:
@@ -401,8 +438,6 @@ class BlackjackMDP(MDP):
                         result.append(((cardValue, None, None), dealerStates[key], self.blackjack*self.bet))
                     elif dealer_value == 21:
                         result.append(((21, 21, None), dealerStates[key], 0))
-                else:
-                    raise NotImplemented('shouldnt be an else')
             return result
 
     def discount(self):
