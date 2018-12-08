@@ -1,3 +1,7 @@
+import random
+import pickle
+import collections
+
 # Abstract class: an RLAlgorithm performs reinforcement learning.  All it needs
 # to know is the set of available actions to take.  The simulator (see
 # simulate()) will call getAction() to get an action, perform the action, and
@@ -31,8 +35,8 @@ class FixedRLAlgorithm(RLAlgorithm):
 # RL algorithm according to the dynamics of the MDP.
 # Each trial will run for at most |maxIterations|.
 # Return the list of rewards that we get for each trial.
-def simulate(mdp, rl, numTrials=10000, maxIterations=5, verbose=False,
-             sort=False):
+def simulate(mdp, rl, numTrials=10000, maxGames=5, verbose=False,
+             ,betPi):
     # Return i in [0, ..., len(probs)-1] with probability probs[i].
     def sample(probs):
         target = random.random()
@@ -42,32 +46,53 @@ def simulate(mdp, rl, numTrials=10000, maxIterations=5, verbose=False,
             if accum >= target: return i
         raise Exception("Invalid probs: %s" % probs)
 
+    counts =
     totalRewards = []  # The rewards we get on each trial
     for trial in range(numTrials):
         state = mdp.startState()
-        sequence = [state]
-        totalDiscount = 1
+        statesequence = [state]
         totalReward = 0
-        for _ in range(maxIterations):
-            action = rl.getAction(state)
+        rewardsequence = []
+        actionsequence = []
+        for _ in range(maxGames*20):
+            count = state[3]
+            if count > 10:
+                count = 10
+            elif count < -10:
+                count = -10
+
+            if state[1] == None:
+                if sum(state[2]) < 10:
+                    break
+                action = 'Begin'
+                count = state[3]
+                mdp.editBet(betPi[count])
+                adjusted_state = ('', '', state[2], state[3])
+                state = adjusted_state
+            else:
+                action = rl.getAction((state[0], state[1], state[3]))
+
+            # Choose random tran
             transitions = mdp.succAndProbReward(state, action)
-            if sort: transitions = sorted(transitions)
-            if len(transitions) == 0:
-                rl.incorporateFeedback(state, action, 0, None)
-                break
-
-            # Choose a random transition
             i = sample([prob for newState, prob, reward in transitions])
-            newState, prob, reward = transitions[i]
-            sequence.append(action)
-            sequence.append(reward)
-            sequence.append(newState)
 
-            rl.incorporateFeedback(state, action, reward, newState)
-            totalReward += totalDiscount * reward
-            totalDiscount *= mdp.discount()
+            # Pull out state, prob, reward from transition
+            newState, prob, reward = transitions[i]
+
+            # Add to sequence of items
+            actionsequence.append(action)
+            rewardsequence.append(reward)
+            statesequence.append(newState)
+            totalReward += reward
             state = newState
         if verbose:
             print "Trial %d (totalReward = %s): %s" % (trial, totalReward, sequence)
         totalRewards.append(totalReward)
-    return totalRewards
+
+    return totalRewards,
+
+def loadPolicy(policy):
+
+    pi =
+
+    return pi
