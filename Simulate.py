@@ -1,6 +1,9 @@
 import random
 import pickle
 import collections
+import Completed_FullBlackJack_Exact as ExactMDP
+
+
 
 # Abstract class: an RLAlgorithm performs reinforcement learning.  All it needs
 # to know is the set of available actions to take.  The simulator (see
@@ -35,8 +38,8 @@ class FixedRLAlgorithm(RLAlgorithm):
 # RL algorithm according to the dynamics of the MDP.
 # Each trial will run for at most |maxIterations|.
 # Return the list of rewards that we get for each trial.
-def simulate(mdp, rl, numTrials=10000, maxGames=5, verbose=False,
-             ,betPi):
+def simulate(mdp, rl, numTrials=1, maxGames=50, verbose=False,
+             , betPi):
     # Return i in [0, ..., len(probs)-1] with probability probs[i].
     def sample(probs):
         target = random.random()
@@ -46,15 +49,16 @@ def simulate(mdp, rl, numTrials=10000, maxGames=5, verbose=False,
             if accum >= target: return i
         raise Exception("Invalid probs: %s" % probs)
 
-    counts =
+
     totalRewards = []  # The rewards we get on each trial
+    statesequence = []
     for trial in range(numTrials):
         state = mdp.startState()
         statesequence = [state]
         totalReward = 0
         rewardsequence = []
         actionsequence = []
-        for _ in range(maxGames*20):
+        for _ in range(maxGames):
             count = state[3]
             if count > 10:
                 count = 10
@@ -70,9 +74,9 @@ def simulate(mdp, rl, numTrials=10000, maxGames=5, verbose=False,
                 adjusted_state = ('', '', state[2], state[3])
                 state = adjusted_state
             else:
-                action = rl.getAction((state[0], state[1], state[3]))
+                action = rl.getAction((state[0], state[1], count))
 
-            # Choose random tran
+            # Choose random trans state
             transitions = mdp.succAndProbReward(state, action)
             i = sample([prob for newState, prob, reward in transitions])
 
@@ -88,11 +92,26 @@ def simulate(mdp, rl, numTrials=10000, maxGames=5, verbose=False,
         if verbose:
             print "Trial %d (totalReward = %s): %s" % (trial, totalReward, sequence)
         totalRewards.append(totalReward)
+        totalStates.append(statesequence)
+
 
     return totalRewards,
 
-def loadPolicy(policy):
+def loadPolicy():
+    policy = collections.defaultdict(str)
+    count = [i for i in range(-10, 11)]
+    for count in counts:
+        current_pi = pickle.load(open('./policy/' + 'Count {} Policy.pkl'.format(count), 'rb'))
+        policy.update(current_pi)
+    return policy
 
-    pi =
+def main():
+    pi = loadPolicy()
+    FixedRLAlgorithm(pi)
+    trueMDP = ExactMDP.BlackjackMDP()
 
-    return pi
+
+
+
+if __name__ == '__main__':
+    main()
