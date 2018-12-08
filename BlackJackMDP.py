@@ -197,6 +197,9 @@ class BlackjackMDP(MDP):
         return value
 
     def old_card_value(self, card_state):
+        """
+        Given a card_state, returns a card value and the number of aces
+        """
         if type(card_state) == int:
             return card_state, 0
 
@@ -219,6 +222,13 @@ class BlackjackMDP(MDP):
 
     ###############################################################################################################
     def player_draw(self, card_state):
+        """
+        Given a initial state, return dict of all possible new states and the probability that each state will happen.
+
+        :param card_state: Current card state of the player or dealer
+        :return: Returns dict of all possible new card states with a value of the probability that a certain state will
+                happen. All probabilities in the dict will add up to one, full representation or probability outcomes.
+        """
         # Return hand of one or two cards, probabilities associated with each hand
         card_states = collections.defaultdict(float)
         card_value, aces = self.old_card_value(card_state)
@@ -232,6 +242,24 @@ class BlackjackMDP(MDP):
         return card_states
 
     def createDrawState(self, cards, prev_val=0, specialplayer=False, acecounter=0, dealerinitial=False):
+        """
+        Create player or dealer draw state based on the card value and appropriate indicators.
+
+        Indicators:
+        A = player holds an ace in their hand with value 11. If player hold ace with value one, no indicator present
+        D = Player holds 2 cards and can double hand
+        S = Player holds 2 cards that are the same, can split hand
+
+
+        :param cards: Card keys of new cards drawn. (i.e. '2', 'k', etc.)
+        :param prev_val: Integer of previous value of hand. (i.e. 18)
+        :param specialplayer: If special player toggle is on, add in double indicator and check split indicator
+        :param acecounter: Number of aces found in the previous hand
+        :param dealerinitial: If this toggle turned on, return an int of the card value. Only one card should be inputted
+                                since only only one card in the dealers hand is seen.
+        :return: Return draw state with appropriate indicators. For player, draw state is string with indicators. For dealer
+                    draw state is integer for initial card, and string otherwise.
+        """
         if dealerinitial:
             if cards.isdigit():
                 return int(cards)
@@ -264,6 +292,13 @@ class BlackjackMDP(MDP):
         return state
 
     def initial_draw(self):
+        """
+        Uses itertool package to find all possible combination of cards that can be drawn in initial draw of 3 cards
+        (2 to the player 1 to the dealer). Subsequent probabilities are found for each hand.
+
+        :return: Returns dict of possible player and dealer states with value equal to the probability that a certain state
+                    will be found.
+        """
         combos = list(itertools.product(self.cardValues, repeat=3))
         states = collections.defaultdict(float)
         for cards in combos:

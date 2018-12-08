@@ -61,6 +61,10 @@ class Window(Frame):
 
         FLAG = False
         warning = []
+        if pvalue == 21:
+            self.V_current = 1.5
+            self.pi_current = 'Winna Winna'
+            FLAG = True
         if pvalue > 21:
             self.V_current = -1
             self.pi_current = 'Busted, no Action available'
