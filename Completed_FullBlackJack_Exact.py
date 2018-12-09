@@ -287,6 +287,23 @@ class BlackjackMDP(MDP):
 
         # If action is stay, enter here
         elif action == 'Stay':
+            if player_value == 21:
+                prob_card = [float(i) / sum(CardsRemaining) for i in CardsRemaining]
+                playerStates = self.player_draw(dealerCards, CardsRemaining, prob_card)
+                for i, key in enumerate(playerStates.keys()):
+                    count = self.currentCount(key[1])
+                    dealer_value = self.cards_value(key[0])
+                    if dealer_value == 21 and player_value == 21:
+                        result.append(((key[0], key[1], key[2], count), playerStates[key], 0))
+                    elif player_value == 21 and dealer_value != 21:
+                        result.append(((21, None, key[2], count), playerStates[key], self.blackjack * self.bet))
+
+                    elif player_value != 21 and dealer_value == 21:
+                        result.append(((21, None, key[2], count), playerStates[key], -self.bet))
+                    else:
+                        assert ValueError('Shouldnt have a value in here')
+                return result
+
             # Draw all dealer cards, until over 17
             dealer_value = self.cards_value(dealerCards)
             queue = [(dealerCards, CardsRemaining, 1)]
@@ -329,16 +346,17 @@ class BlackjackMDP(MDP):
                 playervalue = self.cards_value(key[0])
                 dealervalue = self.cards_value(key[1])
 
-                if dealervalue == 21 and playervalue == 21:
-                    result.append(((key[0], key[1], key[2], count), state_prob[key], 0))
-                elif playervalue == 21 and dealervalue != 21:
-                    result.append(((21, dealervalue, key[2], count), state_prob[key], self.blackjack * self.bet))
-
-                elif playervalue != 21 and dealervalue == 21:
-                    result.append(((playervalue, dealervalue, key[2], count), state_prob[key], -self.bet))
-
-                elif playervalue < 21 and dealervalue < 21:
-                    result.append(((key[0], key[1], key[2], count), state_prob[key], 0))
+                result.append((key[0], key[1], key[2], count), state_prob[key], 0)
+                # if dealervalue == 21 and playervalue == 21:
+                #     result.append(((key[0], key[1], key[2], count), state_prob[key], 0))
+                # elif playervalue == 21 and dealervalue != 21:
+                #     result.append(((21, dealervalue, key[2], count), state_prob[key], self.blackjack * self.bet))
+                #
+                # elif playervalue != 21 and dealervalue == 21:
+                #     result.append(((playervalue, dealervalue, key[2], count), state_prob[key], -self.bet))
+                #
+                # elif playervalue < 21 and dealervalue < 21:
+                #     result.append(((key[0], key[1], key[2], count), state_prob[key], 0))
             return result
 
         elif action == 'Double':
