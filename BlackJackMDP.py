@@ -175,16 +175,12 @@ class BlackjackMDP(MDP):
             if card_state == 11:
                 return str(card_state) + '*A'
             return card_state
-
-
         if type(card_state) == int:
             return card_state
         acecounter = card_state.count('A')
-
         if not card_state:
             return 0
         symindex = card_state.find('*')
-
         if symindex >= 0:
             value = int(card_state[:symindex])
             return value

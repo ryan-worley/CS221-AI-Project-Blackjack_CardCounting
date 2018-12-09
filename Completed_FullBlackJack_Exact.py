@@ -46,7 +46,7 @@ class MDP:
 
 
 class BlackjackMDP(MDP):
-    def __init__(self, cardValues=('2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A'), multiplicity=1,
+    def __init__(self, cardValues=('2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A'), multiplicity=8,
                  threshold=21, bet=1, blackjack=1.5, count=0):
         """
         cardValues: list of integers (face values for each card included in the deck)
@@ -154,6 +154,8 @@ class BlackjackMDP(MDP):
         return value
 
     def old_card_value(self, card_state):
+        if type(card_state) == int:
+            return card_state, 0
         if card_state[-1].isdigit():
             return int(card_state), 0
         else:
@@ -230,41 +232,33 @@ class BlackjackMDP(MDP):
                 prob_i = counts[i] / number
                 counts[i] += -1
                 number += -1
-
                 for j in range(len(self.cardValues)):
                     if counts[j] > 0:
                         count1 = copy.copy(counts)
                         prob_j = count1[j] / number
                         count1[j] += -1
                         number += -1
-                        for k in range(len(self.cardValues)):
-                            if count1[k] > 0:
-                                count2 = copy.copy(count1)
-                                prob_k = count2[k] / number
-                                number += -1
-                                count2[k] += -1
-                                for q in range(len(self.cardValues)):
-                                    if count2[q] > 0:
-                                        count3 = copy.copy(count2)
-                                        prob_q = count3[q] / number
-                                        count3[q] += -1
-                                        remaining.append(count3)
-                                        draws.append(self.cardValues[i] + self.cardValues[j] + self.cardValues[k] +
-                                                     self.cardValues[q])
-                                        probabilities.append(prob_i * prob_j * prob_k * prob_q)
-                                number += 1
+                        for q in range(len(self.cardValues)):
+                            if count1[q] > 0:
+                                count3 = copy.copy(count1)
+                                prob_q = count3[q] / number
+                                count3[q] += -1
+                                remaining.append(count3)
+                                draws.append(self.cardValues[i] + self.cardValues[j] + self.cardValues[q])
+                                probabilities.append(prob_i * prob_j * prob_q)
                         number += 1
                 number += 1
         state_prob = collections.defaultdict(float)
+
         for i, draw in enumerate(draws):
             player = self.createDrawState(draw[0] + draw[2], specialplayer=True)
-            dealer = self.createDrawState(draw[1] + draw[3], specialplayer=False)
+            dealer = self.createDrawState(draw[1], specialplayer=False)
             state_prob[(player, dealer, tuple(remaining[i]))] += probabilities[i]
 
         return state_prob
 
     def currentCount(self, cardsRemaining):
-        return int(math.floor((sum(cardsRemaining[8:]) - sum(cardsRemaining[:5]))/sum(cardsRemaining)))
+        return int(math.floor((sum(cardsRemaining[8:]) - sum(cardsRemaining[:5]))/sum(cardsRemaining)/52))
 
     def editBet(self, bet):
         self.bet = bet
@@ -315,7 +309,6 @@ class BlackjackMDP(MDP):
 
             for values, prob in finalStates.items():
                 dealervalue, cards, count = values
-                count = self.currentCount()
                 if 17 <= dealervalue <= 21:
                     if dealervalue > player_value:
                         result.append(((player_value, None, cards, count), prob, -self.bet))
@@ -337,7 +330,7 @@ class BlackjackMDP(MDP):
                 dealervalue = self.cards_value(key[1])
 
                 if dealervalue == 21 and playervalue == 21:
-                    result.append(((key[0], key[1], key[2], count), state_prob[key]), 0)
+                    result.append(((key[0], key[1], key[2], count), state_prob[key], 0))
                 elif playervalue == 21 and dealervalue != 21:
                     result.append(((21, dealervalue, key[2], count), state_prob[key], self.blackjack * self.bet))
 
@@ -411,7 +404,8 @@ class BlackjackMDP(MDP):
             return result
 
         else:
-            raise ValueError("Shouldn't be calling Dealer Draw Here")
+
+            return result
 
     def discount(self):
         return 1
