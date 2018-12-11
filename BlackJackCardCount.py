@@ -9,6 +9,7 @@ import itertools
 from ValueIteration import *
 from BlackJackMDP import *
 import matplotlib.pyplot as plt
+import scipy.io as sio
 
 
 def save_obj(name, obj):
@@ -162,7 +163,7 @@ def main():
     check_succ(checkdouble, checkbegin, checkdraw, checkstay, count, mdp)
 
     # Generate data, store data for GUI. Generate data for different card counts found in list below.
-    counts = [-10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    counts = [i for i in range(-15, 16)]
     countAnalysis = False
     if countAnalysis:
         for count in counts:
@@ -183,6 +184,9 @@ def main():
         policy_comparison_count[count] = similar_action/len(pi_avg_count)
         startVCount.append(V_count[('', '', count)])
 
+    sio.savemat('startVCount.mat', {'CountValues': startVCount})
+    print('saved file')
+
     fig = plt.plot(policy_comparison_count.keys(), policy_comparison_count.values(), '-bo', [0, 0], [.8, 1.025], '--k')
     ax = plt.subplot(111)
     xl = plt.xlabel('True Card Count')
@@ -201,7 +205,7 @@ def main():
     fig = plt.plot(counts, startVCount, '-bo', [0, 0], [-.05, .05], '--k')
     ax = plt.subplot(111)
     yl = plt.ylabel('Normalized Player Expected Value')
-    xl = plt.xlabel('True Card Count')
+    xl = plt.xlabel('True Card Count:')
     xl.set_style('italic')
     yl.set_style('italic')
     ttl = plt.title('Expected Value given True Count')

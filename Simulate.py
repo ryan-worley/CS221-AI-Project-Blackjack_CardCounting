@@ -2,8 +2,7 @@ import random
 import pickle
 import collections
 import Completed_FullBlackJack_Exact as ExactMDP
-
-
+import numpy as np
 
 # Abstract class: an RLAlgorithm performs reinforcement learning.  All it needs
 # to know is the set of available actions to take.  The simulator (see
@@ -45,8 +44,10 @@ def betpolicy(lower, upper, loweramt, midamt, upperamt):
     return policy
 
 def fixPlayerState(state):
-    if state == '' or state == 21:
+    if state == '':
         return state
+    if state == '21AD':
+        return 21
     newState = list(state)
     if newState[-1].isdigit():
         return state + '*'
@@ -56,7 +57,7 @@ def fixPlayerState(state):
             return ''.join(newState)
 
 def fixDealerState(dealer, cards):
-    if sum(cards[2]) == 0:
+    if sum(cards) == 0:
         assert ValueError
     if dealer == '11A':
         return 11
@@ -64,6 +65,14 @@ def fixDealerState(dealer, cards):
         return int(dealer)
     else:
         return dealer
+
+def adjustCount(count):
+    if count > 10:
+        return 10
+    elif count < -10:
+        return -10
+    else:
+        return count
 
 # Perform |numTrials| of the following:
 # On each trial, take the MDP |mdp| and an RLAlgorithm |rl| and simulates the
@@ -89,32 +98,28 @@ def simulate(mdp, rl, betPi, numTrials=1000, verbose=False, mincards=10, single_
         totalReward = 0
         rewardsequence = []
         actionsequence = []
+        handreward = []
+        hands = []
         handnum = 1
+        print('Trial # {}:'.format(trial))
         while True:
             count = state[3]
             # Adjust true count so stays within limits
-            if count > 10:
-                count = 10
-            elif count < -10:
-                count = -10
+            count = adjustCount(count)
 
             if state[1] is None:
-                if sum(state[2]) < mincards:
+                if sum(state[2]) < mincards or single_hand:
                     break
-                if single_hand = True:
-                    break
+                handnum += 1
                 action = 'Begin'
-                count = state[3]
                 mdp.editBet(betPi[count])
-                adjusted_state = ('', '', state[2], state[3])
-                state = adjusted_state
+                state = ('', '', state[2], state[3])
             else:
-                dealer = fixDealerState(state[1], state[2])
-                action = rl.getAction((fixPlayerState(state[0]), dealer, count))
+                action = rl.getAction((fixPlayerState(state[0]), fixDealerState(state[1], state[2]), count))
 
             # Choose random trans state
             transitions = mdp.succAndProbReward(state, action)
-            i = sample([prob for newState, prob, reward in transitions])
+            i = sample([prob for _, prob, _ in transitions])
 
             # Pull out state, prob, reward from transition
             newState, prob, reward = transitions[i]
@@ -125,13 +130,19 @@ def simulate(mdp, rl, betPi, numTrials=1000, verbose=False, mincards=10, single_
             statesequence.append(newState)
             totalReward += reward
             state = newState
+
         if verbose:
-            print("Trial %d (totalReward = %s): %s" % (action, reward, newState))
+            print("Trial {}, totalReward = {}, number of hands = {}, handReward = {}".format(trial, totalReward, handnum, totalReward/handnum))
+
+        hands.append(handnum)
         totalRewards.append(totalReward)
+        handreward.append(totalReward/handnum)
         totalStates.append(statesequence)
         totalActions.append(actionsequence)
-    print('Total Average Reward is: {}'. format(sum(totalRewards)))
-    return totalRewards, totalStates, totalActions
+
+    print('Total Average Reward is: {}'. format(sum(totalRewards)/len(totalRewards)))
+    print('Total Average Hand Reward is: {}'. format(sum(handreward)/len(handreward)))
+    return totalRewards, totalStates, totalActions, hands
 
 def loadPolicy():
     policy = collections.defaultdict(str)
@@ -144,15 +155,34 @@ def loadPolicy():
 def main():
     pi = loadPolicy()
     rl = FixedRLAlgorithm(pi)
-    trueMDP = ExactMDP.BlackjackMDP()
-
-    bet_test=True
+    trueMDP = ExactMDP.BlackjackMDP(multiplicity=8)
+    bet_test = True
     if bet_test:
         betpi = betpolicy(0, 2, .5, 1, 5)
-        simulate(mdp=trueMDP, rl=rl, betPi=betpi)
+        tr, ts, ta, h = simulate(mdp=trueMDP, rl=rl, betPi=betpi, numTrials=1000, verbose=True)
+    policy_test = False
     if policy_test:
         betpi = betpolicy(0, 2, 1, 1, 1)
-        mincards =
+        tr, ts, ta, h = simulate(mdp=trueMDP, rl=rl, betPi=betpi, numTrials=1000, verbose=True)
+
+    actions = collections.defaultdict(int)
+    # Create Action Log
+    for action_sequence in ta:
+        for action in action_sequence:
+            actions[action] += 1
+
+    count = collections.defaultdict(int)
+    counts = []
+    for state_seq in ts:
+        for state in state_seq:
+            count[state[3]] += 1
+            counts.append(state[3])
+    print(actions, count)
+    mean = np.mean(counts)
+    std = np.std(counts, ddof=1)
+    print(counts)
+    print(mean, std)
+
 
 
 
