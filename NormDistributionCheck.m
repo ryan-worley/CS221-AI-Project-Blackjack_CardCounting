@@ -28,8 +28,9 @@ plot(xdata, cauchy_approximation)
 %% Part 2, use pdf to margionalize out the count from expected value to find E[x | pibet]
 betpolicy =    [.5, 1, 5;
                 0, 1, 5;
-                0, 0, 1;
-                1, 1, 1];
+                0, 0, 5;
+                1, 1, 1;
+                .5,1, 2.5];
 betlevel = [0, 2.5];
 EV = zeros(size(betpolicy,1), 1);
 bet = zeros(1, length(xdata));

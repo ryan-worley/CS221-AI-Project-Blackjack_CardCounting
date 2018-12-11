@@ -2,20 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="66b988b2-8119-4fe1-a4cf-3e8cd9272b3f" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitattributes" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BlackJackCardCount.py" beforeDir="false" afterPath="$PROJECT_DIR$/BlackJackCardCount.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Blackjack Poster.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Completed_FullBlackJack_Exact.py" beforeDir="false" afterPath="$PROJECT_DIR$/Completed_FullBlackJack_Exact.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Gooey.PNG" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/PiCompCount.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/PiCompMid.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/PolicyCompCount.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/NormDistributionCheck.asv" beforeDir="false" afterPath="$PROJECT_DIR$/NormDistributionCheck.asv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/NormDistributionCheck.m" beforeDir="false" afterPath="$PROJECT_DIR$/NormDistributionCheck.m" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Simulate.py" beforeDir="false" afterPath="$PROJECT_DIR$/Simulate.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/VCompCount.png" beforeDir="false" afterPath="$PROJECT_DIR$/VCompCount.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/peer.docx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/peer.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/poster.pdf" beforeDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -32,8 +21,8 @@
             <file leaf-file-name="BlackJackMDP.py" pinned="false" current-in-tab="true">
               <entry file="file://$PROJECT_DIR$/BlackJackMDP.py">
                 <provider selected="true" editor-type-id="text-editor">
-                  <state relative-caret-position="597">
-                    <caret line="475" selection-start-line="475" selection-end-line="475" />
+                  <state relative-caret-position="2535">
+                    <caret line="418" column="64" selection-start-line="418" selection-start-column="64" selection-end-line="418" selection-end-column="64" />
                     <folding>
                       <element signature="e#0#11#0" expanded="true" />
                     </folding>
@@ -48,11 +37,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="BlackJackCardCount.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="BlackJackCardCount.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/BlackJackCardCount.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="417">
-              <caret line="185" selection-start-line="185" selection-end-line="185" />
+            <state relative-caret-position="357">
+              <caret line="25" selection-start-line="25" selection-end-line="25" />
               <folding>
                 <element signature="e#0#11#0" expanded="true" />
               </folding>
@@ -63,8 +52,8 @@
       <file leaf-file-name="Window.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Window.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="170">
-              <caret line="14" column="49" selection-start-line="14" selection-start-column="22" selection-end-line="14" selection-end-column="49" />
+            <state relative-caret-position="238">
+              <caret line="41" selection-start-line="41" selection-end-line="41" />
               <folding>
                 <element signature="e#0#21#0" expanded="true" />
               </folding>
@@ -72,11 +61,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Simulate.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="Simulate.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Simulate.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="281">
-              <caret line="174" column="15" selection-start-line="174" selection-start-column="15" selection-end-line="174" selection-end-column="15" />
+            <state relative-caret-position="-2009">
+              <caret line="37" column="18" lean-forward="true" selection-start-line="37" selection-start-column="18" selection-end-line="37" selection-end-column="18" />
               <folding>
                 <element signature="e#0#13#0" expanded="true" />
               </folding>
@@ -87,8 +76,8 @@
       <file leaf-file-name="Completed_FullBlackJack_Exact.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Completed_FullBlackJack_Exact.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="390">
-              <caret line="266" column="19" selection-start-line="266" selection-start-column="19" selection-end-line="266" selection-end-column="19" />
+            <state relative-caret-position="271">
+              <caret line="259" column="43" selection-start-line="259" selection-start-column="43" selection-end-line="259" selection-end-column="43" />
               <folding>
                 <element signature="e#0#11#0" expanded="true" />
               </folding>
@@ -146,13 +135,13 @@
         <option value="$PROJECT_DIR$/ValueIteration.py" />
         <option value="$PROJECT_DIR$/BlackJackMDP.py" />
         <option value="$PROJECT_DIR$/Completed_FullBlackJack_Exact.py" />
-        <option value="$PROJECT_DIR$/Simulate.py" />
         <option value="$PROJECT_DIR$/BlackJackCardCount.py" />
+        <option value="$PROJECT_DIR$/Simulate.py" />
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="-8" />
+  <component name="ProjectFrameBounds" extendedState="7">
+    <option name="x" value="952" />
     <option name="width" value="977" />
     <option name="height" value="1038" />
   </component>
@@ -220,7 +209,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-6" y="0" width="781" height="830" extended-state="1" />
+    <frame x="-7" y="-7" width="1550" height="838" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" weight="0.04172099" />
@@ -471,20 +460,40 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/BlackJackCardCount.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="357">
+          <caret line="25" selection-start-line="25" selection-end-line="25" />
+          <folding>
+            <element signature="e#0#11#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/Window.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="170">
-          <caret line="14" column="49" selection-start-line="14" selection-start-column="22" selection-end-line="14" selection-end-column="49" />
+        <state relative-caret-position="238">
+          <caret line="41" selection-start-line="41" selection-end-line="41" />
           <folding>
             <element signature="e#0#21#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/BlackJackMDP.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2535">
+          <caret line="418" column="64" selection-start-line="418" selection-start-column="64" selection-end-line="418" selection-end-column="64" />
+          <folding>
+            <element signature="e#0#11#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/Completed_FullBlackJack_Exact.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="390">
-          <caret line="266" column="19" selection-start-line="266" selection-start-column="19" selection-end-line="266" selection-end-column="19" />
+        <state relative-caret-position="271">
+          <caret line="259" column="43" selection-start-line="259" selection-start-column="43" selection-end-line="259" selection-end-column="43" />
           <folding>
             <element signature="e#0#11#0" expanded="true" />
           </folding>
@@ -493,30 +502,10 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Simulate.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="281">
-          <caret line="174" column="15" selection-start-line="174" selection-start-column="15" selection-end-line="174" selection-end-column="15" />
+        <state relative-caret-position="-2009">
+          <caret line="37" column="18" lean-forward="true" selection-start-line="37" selection-start-column="18" selection-end-line="37" selection-end-column="18" />
           <folding>
             <element signature="e#0#13#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/BlackJackCardCount.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="417">
-          <caret line="185" selection-start-line="185" selection-end-line="185" />
-          <folding>
-            <element signature="e#0#11#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/BlackJackMDP.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="597">
-          <caret line="475" selection-start-line="475" selection-end-line="475" />
-          <folding>
-            <element signature="e#0#11#0" expanded="true" />
           </folding>
         </state>
       </provider>

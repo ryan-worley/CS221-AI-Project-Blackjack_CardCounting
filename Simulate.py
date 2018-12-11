@@ -79,7 +79,7 @@ def adjustCount(count):
 # RL algorithm according to the dynamics of the MDP.
 # Each trial will run for at most |maxIterations|.
 # Return the list of rewards that we get for each trial.
-def simulate(mdp, rl, betPi, numTrials=1000, verbose=False, mincards=10, single_hand=False):
+def simulate(mdp, rl, betPi, numTrials=1000, verbose=False, mincards=11, single_hand=False):
     def sample(probs):
         target = random.random()
         accum = 0
@@ -101,7 +101,6 @@ def simulate(mdp, rl, betPi, numTrials=1000, verbose=False, mincards=10, single_
         handreward = []
         hands = []
         handnum = 1
-        print('Trial # {}:'.format(trial))
         while True:
             count = state[3]
             # Adjust true count so stays within limits
@@ -142,7 +141,7 @@ def simulate(mdp, rl, betPi, numTrials=1000, verbose=False, mincards=10, single_
 
     print('Total Average Reward is: {}'. format(sum(totalRewards)/len(totalRewards)))
     print('Total Average Hand Reward is: {}'. format(sum(handreward)/len(handreward)))
-    return totalRewards, totalStates, totalActions, hands
+    return totalRewards, totalStates, totalActions, hands, sum(totalRewards)/len(totalRewards), sum(handreward)/len(handreward)
 
 def loadPolicy():
     policy = collections.defaultdict(str)
@@ -152,39 +151,63 @@ def loadPolicy():
         policy.update(current_pi)
     return policy
 
+def save_obj(name, obj):
+    """
+    Summary: Save object as a pickle file to associated input directory and filename
+    :param name: File name and directory for .pkl output file
+    :param obj: Variable, object you wish to save
+    :return: No returns, file is just saved
+    """
+    with open('policy/' + name + '.pkl', 'wb') as f:
+        pickle.dump(obj, f, 0)
+        f.close()
+
+
 def main():
     pi = loadPolicy()
     rl = FixedRLAlgorithm(pi)
     trueMDP = ExactMDP.BlackjackMDP(multiplicity=8)
     bet_test = True
     if bet_test:
-        betpi = betpolicy(0, 2, .5, 1, 5)
-        tr, ts, ta, h = simulate(mdp=trueMDP, rl=rl, betPi=betpi, numTrials=1000, verbose=True)
+        removed = [0, 2, .5, 1, 5]
+        betpolicies = (
+                       [0, 2, 0, 1, 5],
+                       [0, 2, 0, 0, 5],
+                       [0, 2, 1, 1, 1],
+                       [0, 2, .5, 1, 2.5])
+        num = 1
+        for bet in betpolicies:
+            print('Bet policy {}'.format(num))
+            betpi = betpolicy(bet[0], bet[1], bet[2], bet[3], bet[4])
+            tr, ts, ta, h, avgV, avgVHand = simulate(mdp=trueMDP, rl=rl, betPi=betpi, numTrials=1500, verbose=True)
+            save_obj('{}_{}_{}_BetResults'.format(bet[2], bet[3], bet[4]), [tr, ts, ta, h, avgV, avgVHand])
+            num += 1
+
     policy_test = False
     if policy_test:
-        betpi = betpolicy(0, 2, 1, 1, 1)
-        tr, ts, ta, h = simulate(mdp=trueMDP, rl=rl, betPi=betpi, numTrials=1000, verbose=True)
+        tr, ts, ta, h, avgV, avgVHand = simulate(mdp=trueMDP, rl=rl, betPi=betpi, numTrials=1000, verbose=True)
 
     actions = collections.defaultdict(int)
     # Create Action Log
-    for action_sequence in ta:
-        for action in action_sequence:
-            actions[action] += 1
+    actionAnalysis = False
+    if actionAnalysis:
+        for action_sequence in ta:
+            for action in action_sequence:
+                actions[action] += 1
 
-    count = collections.defaultdict(int)
-    counts = []
-    for state_seq in ts:
-        for state in state_seq:
-            count[state[3]] += 1
-            counts.append(state[3])
-    print(actions, count)
-    mean = np.mean(counts)
-    std = np.std(counts, ddof=1)
-    print(counts)
-    print(mean, std)
-
-
-
+    countAnalysis = False
+    if countAnalysis:
+        count = collections.defaultdict(int)
+        counts = []
+        for state_seq in ts:
+            for state in state_seq:
+                count[state[3]] += 1
+                counts.append(state[3])
+        print(actions, count)
+        mean = np.mean(counts)
+        std = np.std(counts, ddof=1)
+        print(counts)
+        print(mean, std)
 
 if __name__ == '__main__':
     main()
