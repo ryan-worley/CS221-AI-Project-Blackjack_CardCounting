@@ -162,31 +162,69 @@ def save_obj(name, obj):
         pickle.dump(obj, f, 0)
         f.close()
 
+def read_bet(name):
+    """
+    Summary: Reads .pkl file with specified name and directly path
+    :param name: Directory to access file
+    :return: Returns the .pkl file stored as a single variable
+    """
+    with open('./policy/' + name + '.pkl', 'rb') as f:
+        obj = pickle.load(f)
+        f.close()
+        return obj
+
+
+def bet_testing(rl, trueMDP, betpolicies):
+    num = 1
+    for bet in betpolicies:
+        print('Bet policy {}'.format(num))
+        betpi = betpolicy(bet[0], bet[1], bet[2], bet[3], bet[4])
+        tr, ts, ta, h, avgV, avgVHand = simulate(mdp=trueMDP, rl=rl, betPi=betpi, numTrials=1500, verbose=True)
+        save_obj('{}_{}_{}_BetResults'.format(bet[2], bet[3], bet[4]), [tr, ts, ta, h, avgV, avgVHand])
+        num += 1
+
+def analyze_results()
+
 
 def main():
+    # Initialize Objects for testing
     pi = loadPolicy()
     rl = FixedRLAlgorithm(pi)
     trueMDP = ExactMDP.BlackjackMDP(multiplicity=8)
-    bet_test = True
+    betpolicies = ([0, 2, .5, 1, 5],
+                   [0, 2, 0, 1, 5],
+                   [0, 2, 0, 0, 5],
+                   [0, 2, 1, 1, 1],
+                   [0, 2, .5, 1, 2.5])
+    '''Bet Testing Section'''
+    # Toggle Bet test analysis
+    bet_test = False
     if bet_test:
-        removed = [0, 2, .5, 1, 5]
-        betpolicies = (
-                       [0, 2, 0, 1, 5],
-                       [0, 2, 0, 0, 5],
-                       [0, 2, 1, 1, 1],
-                       [0, 2, .5, 1, 2.5])
-        num = 1
-        for bet in betpolicies:
-            print('Bet policy {}'.format(num))
-            betpi = betpolicy(bet[0], bet[1], bet[2], bet[3], bet[4])
-            tr, ts, ta, h, avgV, avgVHand = simulate(mdp=trueMDP, rl=rl, betPi=betpi, numTrials=1500, verbose=True)
-            save_obj('{}_{}_{}_BetResults'.format(bet[2], bet[3], bet[4]), [tr, ts, ta, h, avgV, avgVHand])
-            num += 1
+        bet_testing(rl, trueMDP, betpolicies)
 
+    '''Policy Testing section'''
+    # Toggle Policy Testing Section
     policy_test = False
     if policy_test:
-        tr, ts, ta, h, avgV, avgVHand = simulate(mdp=trueMDP, rl=rl, betPi=betpi, numTrials=1000, verbose=True)
+        tr, ts, ta, h, avgV, avgVHand = simulate(mdp=trueMDP, rl=rl, betPi=betpolicies[4], numTrials=1000, verbose=True)
 
+    '''Analyzing Bet Strategy Section'''
+    # Toggle Analyzing
+    avg_Reward = []
+    for bet in betpolicies:
+        data = read_bet('{}_{}_{}_BetResults'.format(bet[2], bet[3], bet[4]))
+        totalReward, totalStates, totalActions, totalHands, avgV, avgVHand = data
+        avg_Reward =
+
+
+
+
+
+
+
+
+
+    '''Create action log from ran data, not used just interesting'''
     actions = collections.defaultdict(int)
     # Create Action Log
     actionAnalysis = False
@@ -194,6 +232,7 @@ def main():
         for action_sequence in ta:
             for action in action_sequence:
                 actions[action] += 1
+
 
     countAnalysis = False
     if countAnalysis:
@@ -208,6 +247,9 @@ def main():
         std = np.std(counts, ddof=1)
         print(counts)
         print(mean, std)
+
+    bet_analysis = True
+    if bet_analysis
 
 if __name__ == '__main__':
     main()
