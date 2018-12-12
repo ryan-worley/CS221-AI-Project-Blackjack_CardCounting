@@ -3,6 +3,7 @@ import pickle
 import collections
 import Completed_FullBlackJack_Exact as ExactMDP
 import numpy as np
+import scipy.io as sio
 
 # Abstract class: an RLAlgorithm performs reinforcement learning.  All it needs
 # to know is the set of available actions to take.  The simulator (see
@@ -92,6 +93,7 @@ def simulate(mdp, rl, betPi, numTrials=1000, verbose=False, mincards=11, single_
     totalRewards = []  # The rewards we get on each trial
     totalStates = []
     totalActions = []
+    count_counts = []
     for trial in range(numTrials):
         state = mdp.startState()
         statesequence = [state]
@@ -107,12 +109,13 @@ def simulate(mdp, rl, betPi, numTrials=1000, verbose=False, mincards=11, single_
             count = adjustCount(count)
 
             if state[1] is None:
-                if sum(state[2]) < mincards or single_hand:
+                if sum(state[2]) < 15 or single_hand:
                     break
                 handnum += 1
                 action = 'Begin'
                 mdp.editBet(betPi[count])
                 state = ('', '', state[2], state[3])
+                count_counts.append(state[3])
             else:
                 action = rl.getAction((fixPlayerState(state[0]), fixDealerState(state[1], state[2]), count))
 
@@ -141,7 +144,7 @@ def simulate(mdp, rl, betPi, numTrials=1000, verbose=False, mincards=11, single_
 
     print('Total Average Reward is: {}'. format(sum(totalRewards)/len(totalRewards)))
     print('Total Average Hand Reward is: {}'. format(sum(handreward)/len(handreward)))
-    return totalRewards, totalStates, totalActions, hands, sum(totalRewards)/len(totalRewards), sum(handreward)/len(handreward)
+    return totalRewards, totalStates, totalActions, hands, sum(totalRewards)/len(totalRewards), sum(handreward)/len(handreward), count_counts
 
 def loadPolicy():
     policy = collections.defaultdict(str)
@@ -179,12 +182,10 @@ def bet_testing(rl, trueMDP, betpolicies):
     for bet in betpolicies:
         print('Bet policy {}'.format(num))
         betpi = betpolicy(bet[0], bet[1], bet[2], bet[3], bet[4])
-        tr, ts, ta, h, avgV, avgVHand = simulate(mdp=trueMDP, rl=rl, betPi=betpi, numTrials=1500, verbose=True)
-        save_obj('{}_{}_{}_BetResults'.format(bet[2], bet[3], bet[4]), [tr, ts, ta, h, avgV, avgVHand])
+        tr, ts, ta, h, avgV, avgVHand, count_count = simulate(mdp=trueMDP, rl=rl, betPi=betpi, numTrials=2500, verbose=True)
+        save_obj('{}_{}_{}_BetResults'.format(bet[2], bet[3], bet[4]), [tr, ts, ta, h, avgV, avgVHand, count_count])
         num += 1
-
-def analyze_results()
-
+        sio.savemat('CountDistribution', count_count)
 
 def main():
     # Initialize Objects for testing
@@ -198,7 +199,7 @@ def main():
                    [0, 2, .5, 1, 2.5])
     '''Bet Testing Section'''
     # Toggle Bet test analysis
-    bet_test = False
+    bet_test = True
     if bet_test:
         bet_testing(rl, trueMDP, betpolicies)
 
@@ -206,22 +207,35 @@ def main():
     # Toggle Policy Testing Section
     policy_test = False
     if policy_test:
-        tr, ts, ta, h, avgV, avgVHand = simulate(mdp=trueMDP, rl=rl, betPi=betpolicies[4], numTrials=1000, verbose=True)
+        tr, ts, ta, h, avgV, avgVHand, count_count = simulate(mdp=trueMDP, rl=rl, betPi=betpolicies[4], numTrials=1000, verbose=True)
 
     '''Analyzing Bet Strategy Section'''
     # Toggle Analyzing
-    avg_Reward = []
-    for bet in betpolicies:
-        data = read_bet('{}_{}_{}_BetResults'.format(bet[2], bet[3], bet[4]))
-        totalReward, totalStates, totalActions, totalHands, avgV, avgVHand = data
-        avg_Reward =
+    Analyzing = False
+    if Analyzing:
+        avg_Reward = []
+        handReward = []
+        V_betSimulated = []
+        for i, bet in enumerate(betpolicies):
+            data = read_bet('{}_{}_{}_BetResults'.format(bet[2], bet[3], bet[4]))
+            totalReward, totalStates, totalActions, totalHands, avgV, avgVHand, counts_count = data
+            print(np.mean(totalHands))
+            print('Policy {} '.format(i+1), avgV/(np.mean(totalHands)))
+            avg_Reward.append(sum(totalReward)/len(totalReward))
+            for tr, th in zip(totalReward, totalHands):
+                handReward.append(tr/th)
+            V_betSimulated.append(sum(handReward)/len(handReward))
 
+        file = sio.loadmat('EV_Exact.mat')
+        V_betExact = file['EV']
+        print(V_betExact)
 
-
-
-
-
-
+        V_Compare = [(x, y) for x, y in zip(V_betSimulated, V_betExact)]
+        V_Difference = [x -y for x, y in zip(V_betSimulated, V_betExact)]
+        V_percentDifference = [((x - y)/x)*100 for x, y in zip(V_betSimulated, V_betExact)]
+        print('Hand Values for 5 cases ', V_Compare)
+        print('Difference for Each Case ', V_Difference)
+        print('Normalized Percent Different ', V_percentDifference)
 
 
     '''Create action log from ran data, not used just interesting'''
@@ -248,8 +262,6 @@ def main():
         print(counts)
         print(mean, std)
 
-    bet_analysis = True
-    if bet_analysis
 
 if __name__ == '__main__':
     main()

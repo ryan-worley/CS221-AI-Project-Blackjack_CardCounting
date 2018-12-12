@@ -303,6 +303,8 @@ class BlackjackMDP(MDP):
 
             # Draw all dealer cards, until over 17
             dealer_value = self.cards_value(dealerCards)
+            if dealerCards == 11:
+                dealerCards = '11A'
             queue = [(dealerCards, CardsRemaining, 1)]
             finalStates = collections.defaultdict(float)
 
@@ -358,6 +360,9 @@ class BlackjackMDP(MDP):
             # Calculate dealer combinations and probability values
             queue = []
             dealer_value = self.cards_value(dealerCards)
+            if dealerCards == 11:
+                dealerCards = '11A'
+
             finalStates = collections.defaultdict(float)
 
 

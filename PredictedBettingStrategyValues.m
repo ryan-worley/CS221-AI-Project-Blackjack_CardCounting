@@ -17,12 +17,12 @@ ydata = N.BinCounts/sum(N.BinCounts);
 xdata = edges(1:end-1) + 0.5;
 
 % Do a least squares fitting of data
-fun = @(q) leastSquares(xdata, ydata, q(1), q(2));
-q_guess = [-.1, 3];
+fun = @(q) leastSquares(xdata, ydata, 0, q);
+q_guess = [3];
 LS_parameter = fminsearch(fun, q_guess);
 
 % Cauchy pdf to fit the distribution, normal was not doing hot
-cauchy_approximation = cauchypdf(xdata, LS_parameter(1), LS_parameter(2));
+cauchy_approximation = cauchypdf(xdata, 0, LS_parameter+.1);
 plot(xdata, cauchy_approximation)
 
 %% Part 2, use pdf to margionalize out the count from expected value to find E[x | pibet]
@@ -94,7 +94,6 @@ set(gca, ...
   'YMinorTick'  , 'on');
 
 end
-
 figure
 plot(xdata, Vstart)
 grid on
@@ -106,3 +105,11 @@ set(gca, ...
   'TickLength'  , [.02 .02] , ...
   'XMinorTick'  , 'on'      , ...
   'YMinorTick'  , 'on');
+
+%% Save Exact Values Calculated Explicitly using probability
+% use distributions given via similuate, expected values for count
+% Given by the MDP and value iteration, check this probablistic value with
+% model free monte carlo simulations for the expected value, ensure optimum
+% policy is correct
+
+save('EV_Exact', 'EV', 'betpolicy')
