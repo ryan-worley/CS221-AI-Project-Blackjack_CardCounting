@@ -80,7 +80,15 @@ def adjustCount(count):
 # RL algorithm according to the dynamics of the MDP.
 # Each trial will run for at most |maxIterations|.
 # Return the list of rewards that we get for each trial.
-def simulate(mdp, rl, betPi, numTrials=1000, verbose=False, mincards=11, single_hand=False):
+def simulate(mdp, rl, betPi, numTrials=1000, verbose=False, mincards=15, single_hand=False):
+    '''Simulates a game of Blackjack based on a fixed policy entered in by the user of the function
+    and based on the mechanics of an MDP. A betting strategy must be implemented as well for testing.
+
+    mincards = minimum number of cards left in the deck where a new hand is allowed to be started.
+    verbose = displays lots of information
+    single_hand = if you only want to run an analysis for one hand toggle this option on
+    numTrials = number of Monte Carlo trials conducted
+    '''
     def sample(probs):
         target = random.random()
         accum = 0
@@ -109,7 +117,7 @@ def simulate(mdp, rl, betPi, numTrials=1000, verbose=False, mincards=11, single_
             count = adjustCount(count)
 
             if state[1] is None:
-                if sum(state[2]) < 15 or single_hand:
+                if sum(state[2]) < mincards or single_hand:
                     break
                 handnum += 1
                 action = 'Begin'
@@ -147,8 +155,9 @@ def simulate(mdp, rl, betPi, numTrials=1000, verbose=False, mincards=11, single_
     return totalRewards, totalStates, totalActions, hands, sum(totalRewards)/len(totalRewards), sum(handreward)/len(handreward), count_counts
 
 def loadPolicy():
+    '''Load all count policy files and put them into one dict'''
     policy = collections.defaultdict(str)
-    counts = [i for i in range(-10, 11)]
+    counts = [i for i in range(-15, 16)]
     for count in counts:
         current_pi = pickle.load(open('./policy/' + 'Count {} Policy.pkl'.format(count), 'rb'))
         policy.update(current_pi)
@@ -179,15 +188,17 @@ def read_bet(name):
 
 def bet_testing(rl, trueMDP, betpolicies):
     num = 1
+    '''Load necessary bet data into matlab as a count distribution'''
     for bet in betpolicies:
         print('Bet policy {}'.format(num))
         betpi = betpolicy(bet[0], bet[1], bet[2], bet[3], bet[4])
         tr, ts, ta, h, avgV, avgVHand, count_count = simulate(mdp=trueMDP, rl=rl, betPi=betpi, numTrials=2500, verbose=True)
         save_obj('{}_{}_{}_BetResults'.format(bet[2], bet[3], bet[4]), [tr, ts, ta, h, avgV, avgVHand, count_count])
         num += 1
-        sio.savemat('CountDistribution', count_count)
+        sio.savemat('CountDistribution', {'counts': count_count})
 
 def main():
+    '''Main file, no inputs, conducts simulation of different betting polciies'''
     # Initialize Objects for testing
     pi = loadPolicy()
     rl = FixedRLAlgorithm(pi)
@@ -199,7 +210,7 @@ def main():
                    [0, 2, .5, 1, 2.5])
     '''Bet Testing Section'''
     # Toggle Bet test analysis
-    bet_test = True
+    bet_test = False
     if bet_test:
         bet_testing(rl, trueMDP, betpolicies)
 
@@ -211,7 +222,7 @@ def main():
 
     '''Analyzing Bet Strategy Section'''
     # Toggle Analyzing
-    Analyzing = False
+    Analyzing = True
     if Analyzing:
         avg_Reward = []
         handReward = []
@@ -246,8 +257,6 @@ def main():
         for action_sequence in ta:
             for action in action_sequence:
                 actions[action] += 1
-
-
     countAnalysis = False
     if countAnalysis:
         count = collections.defaultdict(int)

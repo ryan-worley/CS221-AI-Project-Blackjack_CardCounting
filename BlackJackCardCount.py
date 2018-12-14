@@ -154,6 +154,7 @@ def main():
     mdp = BlackjackMDP()
     startState = mdp.startState()
 
+    '''Used to check succProbReward function, toggled to off for now. Checking intermediate results'''
     # Checking code for all succReward actions, can toggle on and off with booleans
     checkdouble = False
     checkbegin = False
@@ -162,6 +163,7 @@ def main():
     count = 0
     check_succ(checkdouble, checkbegin, checkdraw, checkstay, count, mdp)
 
+    '''Generate count anlysis data by toggling to on, will automatically save and overwrite any policy previous generated'''
     # Generate data, store data for GUI. Generate data for different card counts found in list below.
     counts = [i for i in range(-15, 16)]
     countAnalysis = False
@@ -169,6 +171,7 @@ def main():
         for count in counts:
             countIteration(count, 12)
 
+    '''Read back in policy, clean data, use for plotting or other purposes. Runs automatically'''
     pi_avg_count = cleanpolicy(read_obj('Count 0 Policy'))
     V_start_count = read_obj('Count 0 V')
     policy_comparison_count = {}
@@ -184,9 +187,13 @@ def main():
         policy_comparison_count[count] = similar_action/len(pi_avg_count)
         startVCount.append(V_count[('', '', count)])
 
+    '''Output expected value to mat files for use in probablistic analysis'''
     sio.savemat('startVCount.mat', {'CountValues': startVCount})
     print('saved file')
 
+
+    '''Plot and save the plots associated with count analysis'''
+    # I should have made a function for this but it's a bit late now and it works
     fig = plt.plot(policy_comparison_count.keys(), policy_comparison_count.values(), '-bo', [0, 0], [.8, 1.025], '--k')
     ax = plt.subplot(111)
     xl = plt.xlabel('True Card Count')
@@ -217,6 +224,7 @@ def main():
     plt.savefig('VCompCount.png', bbox_inches='tight')
     plt.clf()
 
+    '''Complete the midcard analysis plots, very nicely condensed into functions wow'''
     # Midcard analysis, how do value results change by entering midcard value
     midcards = [8+i/2 for i in range(0, 17)]
     midcardAnalysis = False
