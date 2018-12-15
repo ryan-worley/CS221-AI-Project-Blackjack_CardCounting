@@ -187,8 +187,10 @@ def read_bet(name):
 
 
 def bet_testing(rl, trueMDP, betpolicies):
+    """
+    Load necessary bet data into matlab as a count distribution
+    """
     num = 1
-    '''Load necessary bet data into matlab as a count distribution'''
     for bet in betpolicies:
         print('Bet policy {}'.format(num))
         betpi = betpolicy(bet[0], bet[1], bet[2], bet[3], bet[4])
@@ -199,6 +201,12 @@ def bet_testing(rl, trueMDP, betpolicies):
 
 def main():
     '''Main file, no inputs, conducts simulation of different betting polciies'''
+    bet_test = False  # Toggle Bet test analysis
+    policy_test = False  # Toggle Policy Testing Section
+    Analyzing = True  # Toggle Analyzing
+    actionAnalysis = False  # Toggle action script
+    countAnalysis = False  # Analysis of count toggle
+
     # Initialize Objects for testing
     pi = loadPolicy()
     rl = FixedRLAlgorithm(pi)
@@ -209,20 +217,14 @@ def main():
                    [0, 2, 1, 1, 1],
                    [0, 2, .5, 1, 2.5])
     '''Bet Testing Section'''
-    # Toggle Bet test analysis
-    bet_test = False
     if bet_test:
         bet_testing(rl, trueMDP, betpolicies)
 
     '''Policy Testing section'''
-    # Toggle Policy Testing Section
-    policy_test = False
     if policy_test:
         tr, ts, ta, h, avgV, avgVHand, count_count = simulate(mdp=trueMDP, rl=rl, betPi=betpolicies[4], numTrials=1000, verbose=True)
 
     '''Analyzing Bet Strategy Section'''
-    # Toggle Analyzing
-    Analyzing = True
     if Analyzing:
         avg_Reward = []
         handReward = []
@@ -248,16 +250,15 @@ def main():
         print('Difference for Each Case ', V_Difference)
         print('Normalized Percent Different ', V_percentDifference)
 
-
     '''Create action log from ran data, not used just interesting'''
     actions = collections.defaultdict(int)
     # Create Action Log
-    actionAnalysis = False
     if actionAnalysis:
         for action_sequence in ta:
             for action in action_sequence:
                 actions[action] += 1
-    countAnalysis = False
+
+    '''Count analysis, checks the number of each count value'''
     if countAnalysis:
         count = collections.defaultdict(int)
         counts = []
