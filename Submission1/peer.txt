@@ -1,0 +1,18 @@
+Ryan Worley (rya1592)
+p-peer
+_____________________________________________________________________________________
+
+Title: Towards a 2048  AI Agent That Can Reach the Highest Tile
+Name: David Zhou
+Review: Cool strategy for a way to play the 2048 game. Used very interesting heuristics used in order to evaluate a certain state. Additionally, very clever way of storing the state for the game, using only column and row vectors. By doing this, all actions could be evaluated efficiently using the discretized system. 
+_____________________________________________________________________________________
+
+Title: Beats: Generating Music with Artificial Intelligence
+Name: Krishna Patel, Lea Jabbour, Anthony Mayfield
+Review: Very interesting project idea. The ability to generate music via analyzing music samples is a cool concept. Seems like the results were satisfactory with survey results. Would have liked to hear the songs in person. 
+
+_____________________________________________________________________________________
+
+Title: Finding the next Big Hit
+Name: Stefan Bran, Geraldine Millos-Lopez, Ben Jun Xiong Wu
+Review: Tried to tell whether a song is ‘hot’ or not depending on certain features.  Ran lemmatization and stemming algorithms for word classification. Would have liked to learn more specifics about the certain feature that they used for classification of hotness. 

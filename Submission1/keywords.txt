@@ -1,0 +1,8 @@
+MDP
+Q-Learning
+Epsilon-Greedy
+Generalization
+Value Iteration
+Feature Extraction
+Gradient Descent
+Linear Classifier
